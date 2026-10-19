@@ -168,7 +168,7 @@ function RequestCard({
   ride: Ride;
   km: number | null;
   driverId: string;
-  offer?: { amount: number; status: string };
+  offer?: { amount: number; status: string } | undefined;
 }) {
   const qc = useQueryClient();
   const [counter, setCounter] = useState("");
@@ -180,7 +180,7 @@ function RequestCard({
       .from("ride_offers")
       .upsert({ ride_id: ride.id, driver_id: driverId, amount, status: "pending" }, { onConflict: "ride_id,driver_id" });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     toast.success(`Offer of PKR ${amount} sent`);
     setCounter("");
     qc.invalidateQueries({ queryKey: ["my-offers", driverId] });

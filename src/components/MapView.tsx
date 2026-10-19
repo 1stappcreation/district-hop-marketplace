@@ -1,3 +1,4 @@
+/// <reference types="google.maps" />
 import { useEffect, useRef, useState } from "react";
 import { DISTRICT, type LatLng } from "@/lib/district";
 
@@ -109,7 +110,7 @@ export function MapView({
       markers.forEach((m) => bounds.extend(m.position));
       map.current.fitBounds(bounds, 60);
     } else if (markers.length === 1) {
-      map.current.panTo(markers[0].position);
+      map.current.panTo(markers[0]!.position);
     }
   }, [ready, markers]);
 

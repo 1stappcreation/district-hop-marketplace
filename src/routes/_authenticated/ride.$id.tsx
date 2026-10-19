@@ -223,8 +223,8 @@ function RidePage() {
 
         {isDriver && NEXT[r.status] && (
           <div className="space-y-2">
-            <Button size="xl" onClick={() => setStatus(NEXT[r.status].to)}>
-              {NEXT[r.status].label}
+            <Button size="xl" onClick={() => setStatus(NEXT[r.status]!.to)}>
+              {NEXT[r.status]!.label}
             </Button>
             <Button asChild variant="outline" className="w-full rounded-2xl">
               <a href={`https://www.google.com/maps/dir/?api=1&destination=${navTarget}`} target="_blank" rel="noreferrer">

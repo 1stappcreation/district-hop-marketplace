@@ -57,7 +57,7 @@ export function PassengerHome({ userId }: { userId: string }) {
   }, [pickup, drop]);
 
   function pick(p: LatLng) {
-    if (!inDistrict(p)) return toast.error(`Only inside ${DISTRICT.name} district`);
+    if (!inDistrict(p)) return void toast.error(`Only inside ${DISTRICT.name} district`);
     if (picking === "pickup") {
       setPickup(p);
       setPicking("drop");
@@ -68,7 +68,7 @@ export function PassengerHome({ userId }: { userId: string }) {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const p = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        if (!inDistrict(p)) return toast.error(`You're outside ${DISTRICT.name} district`);
+        if (!inDistrict(p)) return void toast.error(`You're outside ${DISTRICT.name} district`);
         setPickup(p);
         setPickupText("My location");
         setPicking("drop");
@@ -79,9 +79,9 @@ export function PassengerHome({ userId }: { userId: string }) {
   }
 
   async function request() {
-    if (!pickup || !drop) return toast.error("Set pickup and drop-off on the map");
+    if (!pickup || !drop) return void toast.error("Set pickup and drop-off on the map");
     const amount = parseInt(fare || String(suggestion), 10);
-    if (!amount || amount < 30) return toast.error("Enter your fare (min PKR 30)");
+    if (!amount || amount < 30) return void toast.error("Enter your fare (min PKR 30)");
     setBusy(true);
     const { data, error } = await supabase
       .from("rides")
@@ -102,7 +102,7 @@ export function PassengerHome({ userId }: { userId: string }) {
       .select("id")
       .single();
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     navigate({ to: "/ride/$id", params: { id: data.id } });
   }
 

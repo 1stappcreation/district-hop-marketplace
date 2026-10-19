@@ -15,8 +15,8 @@ export function Onboarding({ userId }: { userId: string }) {
   const [busy, setBusy] = useState(false);
 
   async function save() {
-    if (name.trim().length < 2) return toast.error("Enter your name");
-    if (type === "driver" && plate.trim().length < 3) return toast.error("Enter your vehicle number");
+    if (name.trim().length < 2) return void toast.error("Enter your name");
+    if (type === "driver" && plate.trim().length < 3) return void toast.error("Enter your vehicle number");
     setBusy(true);
     const { error } = await supabase
       .from("profiles")
@@ -28,7 +28,7 @@ export function Onboarding({ userId }: { userId: string }) {
       })
       .eq("id", userId);
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["profile", userId] });
   }
 

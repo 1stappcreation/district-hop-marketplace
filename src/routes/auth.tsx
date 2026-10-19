@@ -43,11 +43,11 @@ function AuthPage() {
   async function sendCode(e: React.FormEvent) {
     e.preventDefault();
     const e164 = toE164(phone);
-    if (!/^\+923\d{9}$/.test(e164)) return toast.error("Enter a valid mobile number, e.g. 0300 1234567");
+    if (!/^\+923\d{9}$/.test(e164)) return void toast.error("Enter a valid mobile number, e.g. 0300 1234567");
     setBusy(true);
     const { error } = await supabase.auth.signInWithOtp({ phone: e164 });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     setSent(e164);
     toast.success("Code sent by SMS");
   }
@@ -57,7 +57,7 @@ function AuthPage() {
     setBusy(true);
     const { error } = await supabase.auth.verifyOtp({ phone: sent, token: code, type: "sms" });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     navigate({ to: "/app", replace: true });
   }
 
