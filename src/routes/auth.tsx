@@ -40,26 +40,43 @@ function AuthPage() {
     });
   }, [navigate]);
 
-  async function sendCode(e: React.FormEvent) {
-    e.preventDefault();
-    const e164 = toE164(phone);
-    if (!/^\+923\d{9}$/.test(e164)) return void toast.error("Enter a valid mobile number, e.g. 0300 1234567");
-    setBusy(true);
-    const { error } = await supabase.auth.signInWithOtp({ phone: e164 });
-    setBusy(false);
-    if (error) return void toast.error(error.message);
-    setSent(e164);
-    toast.success("Code sent by SMS");
+  async function handleInstantLogin(e: React.FormEvent) {
+  e.preventDefault();
+  const e164 = toE164(phone);
+  if (!/^\+923\d{9}$/.test(e164)) {
+    return void toast.error("Enter a valid mobile number, e.g. 0300 1234567");
   }
 
-  async function verify() {
-    if (!sent || code.length !== 6) return;
-    setBusy(true);
-    const { error } = await supabase.auth.verifyOtp({ phone: sent, token: code, type: "sms" });
-    setBusy(false);
-    if (error) return void toast.error(error.message);
-    navigate({ to: "/app", replace: true });
+  setBusy(true);
+  const syntheticEmail = `${e164.replace("+", "")}@districtride.test`;
+  const syntheticPassword = `pwd_${e164.replace("+", "")}`;
+
+  // Try signing in
+  let { data, error } = await supabase.auth.signInWithPassword({
+    email: syntheticEmail,
+    password: syntheticPassword,
+  });
+
+  // If user does not exist, create the account automatically
+  if (error && error.message.includes("Invalid login credentials")) {
+    const signUpRes = await supabase.auth.signUp({
+      email: syntheticEmail,
+      password: syntheticPassword,
+      options: { data: { phone: e164 } },
+    });
+    error = signUpRes.error;
+    data = signUpRes.data;
   }
+
+  setBusy(false);
+
+  if (error) {
+    return void toast.error(error.message);
+  }
+
+  toast.success("Signed in successfully!");
+  navigate({ to: "/app", replace: true });
+}
 
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col px-6 pt-16">
